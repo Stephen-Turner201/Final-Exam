@@ -325,14 +325,14 @@ void addNewPerson(person* current, person* head) {
     person new_person = getNewPerson();
     cout << endl << "Adding the following person to list of residents: " << endl;
     cout << new_person.pName << " | " << new_person.pSSN << " | " << new_person.gender << " | " << new_person.DOB << " | " 
-        << new_person.height << " | " << new_person.weight << " | " << new_person.fSSN << " | "  << new_person.mSSN << " | " <<  endl ;
+         << new_person.height << " | " << new_person.weight << " | " << new_person.fSSN << " | "  << new_person.mSSN << " | " <<  endl ;
     
-    // Find position for new person based on SSN
-    while((current != NULL) && (new_person.pSSN < current->pSSN)) {
-        current = current->next;
+    //Locate position for new person based on SSN
+    While ((current != NULL) && (new_person.SSN < current ->SSN)){
+    current = current ->next;
     }
-    // Insert person at specific position in list
-    insertAfter(current->next, &new_person);
+    //place person at specific position in list
+    insertAfter(current -> next, New_Person);
     current = head;
     cout << endl;
 }
@@ -362,26 +362,7 @@ person getNewPerson() {
     // end initializing
     return ures;
 }
-/* Given a node prev_node, insert a new node after the given 
-prev_node */
-void insertAfter(person* prev_person, person* new_person) { 
-    /*1. Check if the given prev_node is NULL */
-    if (prev_person == NULL) { 
-        cout<<"The given previous node cannot be NULL"; 
-        return; 
-    }
-    
-    /* 2. Allocate new node */
-    person* new_data = new person;
-    
-    /* 3. Put in the data */
-    new_data = new_person;
-    
-    /* 4. Make next of new node as next of prev_node */
-    new_data->next = prev_person->next;
-    
-    /* 5. Move the next of prev_node as new_node */
-    prev_person->next = new_person; 
+
 }
 
 void editPerson(person* current) {
