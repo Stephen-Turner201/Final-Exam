@@ -1,0 +1,633 @@
+/******************************************************************************
+JOSHUA PETERS, JACK SAPP, STEPHEN TURNER - 05/05/2021
+CSC 201 - SAI
+
+Final Exam
+Items 1-12
+*******************************************************************************/
+#include <iostream>
+#include <fstream>
+#include <time.h>
+#include <string>
+using namespace std;
+
+struct person{   
+    string pName;
+    long pSSN;
+    char gender;  
+    string DOB;
+    float height; 
+    float weight;
+    long fSSN;
+    long mSSN;
+    
+    person* next; 
+};
+
+void display_list(person*); 
+int display_menu();
+void deletePerson(person**, int);
+person getNewPerson();
+void insertPos(person**, int, person*);
+void insertAfter(person*, person);
+void addNewPerson(person*, person*);
+person getNewPerson();
+void insertAfter(person*, person*);
+void editPerson(person*);
+float getAge(string);
+float getBMI(float, float);
+void getParents(person*);
+void getChildren(person*);
+void getSiblings(person*);
+void getRelatives(person*);
+
+int main(){ 
+    person* head = new person; // independent person 
+    head->next = NULL; 
+    
+    person* current = head; person* newPerson;
+    
+    string fLine;
+    ifstream ifile;
+    ifile.open("residents.txt");
+    
+    while (!ifile.eof()){
+        getline( ifile, fLine); 
+        current->pName = fLine;
+        getline( ifile, fLine); 
+        current->pSSN = stol(fLine);
+        getline( ifile, fLine); 
+        current->gender = fLine[0];
+        getline( ifile, fLine); 
+        current->DOB = fLine;
+        getline( ifile, fLine); 
+        current->height = stof(fLine);
+        getline( ifile, fLine); 
+        current->weight = stof(fLine);
+        getline( ifile, fLine); 
+        current->fSSN = stol(fLine);
+        getline( ifile, fLine); 
+        current->mSSN = stol(fLine);
+        
+        newPerson = new person; // independent person 
+        current->next = newPerson; // linking persons 
+        current = newPerson; 
+    }
+    ifile.close(); 
+    
+    current = head; person* prevPerson ;  
+    while (current->next != NULL){
+        prevPerson = current;
+        current = current->next;
+    } 
+    prevPerson->next = NULL; 
+    
+    current = head;
+    cout << endl;
+    
+    // SORT PERSONS IN ASCENDING SSN
+    person* temp = head ;
+    int i = 0 ;
+     while(temp!=NULL){
+         i++;
+         temp=temp->next ;
+    }    
+    int n = i - 1;
+  
+    while(n--){
+        
+    person* prev = NULL;
+    person* current = head;
+    
+        while(current->next != NULL){
+            person* index = current->next ;
+            
+            if(current->pSSN >= index->pSSN){
+                
+                if(prev==NULL){ // if first Node
+                    
+                    //Node* index = current->next ;
+                    current->next = index->next ;
+                    index->next = current ;
+                    prev=index ;
+                    head = prev ;
+                }
+                else {
+                    //Node* index = current->next ;
+                    prev->next = index ;
+                    current->next = index->next ;
+                    index->next = current ;
+                    prev = index ;
+               }
+            }
+            else {
+                prev = current ; 
+                current=current->next ;
+            }
+        }
+    }
+	current = head;
+	cout << endl;
+	
+	int choice = -1;
+    while(choice != 0) {
+    	bool validChoice = false;
+    	while(validChoice == false) {
+    	    choice = display_menu();
+    	    if((choice < 0) || (choice > 12)) {
+    	        cout << endl << "Invalid choice, try again: ";
+    	    }
+    	    else { validChoice = true; }
+    	}
+    	if(validChoice == true) {
+    	    switch (choice){
+    	        case 0: {
+    	            cout << endl << "Thank you for using county's resident managment system." << endl;
+    	            break;
+    	        }
+    	        case 1: {
+    	            cout << endl;
+    	            display_list(head);
+    	            break;
+    	        }
+    	        case 2: {
+    	            // Get person to delete
+                    cout << endl << "Enter SSN of person to delete from list of residents: " << endl;
+                    long uSSN; cin >> uSSN;
+                    int pos = 0;
+                    // Find position of person to delete
+                    while ((current != NULL) && (current->pSSN != uSSN)) {
+                        current = current->next;
+                        pos++;
+                    }
+                    // Display person to delete from list
+                    cout << endl << "Removing the following person from list of residents: " << endl;
+                    cout << current->pName << " | " << current->pSSN << " | " << current->gender << " | " << current->DOB << " | " 
+                         << current->height << " | " << current->weight << " | " << current->fSSN << " | "  << current->mSSN << " | " <<  endl ;
+                    // Delete selected person
+                    deletePerson(&head, pos);
+                    
+                    current = head;
+                    cout << endl;
+                    break;
+    	        }
+    	        case 3: {
+    	            addNewPerson(current, head);
+    	            break;
+    	        }
+    	        case 4: {
+    	            
+    	            break;
+    	        }
+                case 5: {
+    	            editPerson(head);
+    	            break;
+    	        }
+    	        case 6: {
+    	            // Get persons 65 years or older
+                    cout << endl << "These residents are eligible for Social Security: " << endl;
+                    while (current != NULL) {
+                        float age = -1.00;
+                        string strDOB = current->DOB;
+                        strDOB = strDOB + " 00:00:00";
+                        age = getAge(strDOB);
+                        //cout << age <<" || ";
+                        if(age >= 65.00){ 
+                            cout << current->pName << " | " << current->pSSN << " | " << current->gender << " | " << current->DOB << " | " 
+                                 << current->height << " | " << current->weight << " | " << current->fSSN << " | "  << current->mSSN << " | " <<  endl ;
+                        }
+                        current = current->next;
+                    }
+                    current = head;
+                    cout << endl << endl;
+    	            break;
+    	        }
+    	        case 7: {
+    	            cout << "These residents are at high risk of cardiovascular disease: " << endl;
+    	            while(current != NULL) {
+    	                float BMI = getBMI(current->height, current->weight);
+    	                cout << BMI << " || ";
+    	                if(BMI > 27) {
+    	                    cout << current->pName << " | " << current->pSSN << " | " << current->gender << " | " << current->DOB << " | " 
+                                 << current->height << " | " << current->weight << " | " << current->fSSN << " | "  << current->mSSN << " | " <<  endl ;
+    	                }
+    	                current = current->next;
+    	            }
+    	            current = head;
+    	            cout << endl << endl;
+    	            break;
+    	        }
+    	        case 8: {
+    	            cout << "The male-to-female ratio of the county population: " << endl;
+    	            int mCount = 0;
+    	            int fCount = 0;
+    	            while (current != NULL) {
+    	                if(current->gender == 'M') mCount++;
+    	                if(current->gender == 'F') fCount++;
+    	                current = current->next;
+    	            }
+    	            cout << mCount << " males : " << fCount << " females" << endl;
+    	            current = head;
+    	            cout << endl << endl;
+    	            break;
+    	        }
+    	        case 9: {
+    	            getParents(head);
+    	            break;
+    	        }
+    	        case 10: {
+    	            getChildren(head);
+    	            break;
+    	        }
+    	        case 11: {
+    	            getSiblings(head);
+    	            break;
+    	        }
+    	        case 12: {
+    	            getRelatives(head);
+    	            break;
+    	        }
+    	        default: { cout << "Invalid input." << endl; }
+    	    }
+    	}
+    }
+	return 0; 
+}
+
+void display_list(person *head){
+	person *current = head;
+	
+	while (current != NULL){
+        cout << current->pName << " | " << current->pSSN << " | " << current->gender << " | " << current->DOB << " | " 
+        << current->height << " | " << current->weight << " | " << current->fSSN << " | "  << current->mSSN << " | " <<  endl ;
+        current = current->next;
+    }
+}
+
+int display_menu() {
+    cout << endl << endl << "COUNTY'S RESIDENT MANAGEMENT SYSTEM" << endl;
+    cout << endl << "Select an option from the following list: " << endl;
+    cout << " [01] Display all persons by SSN " << endl
+         << " [02] Remove person from list " << endl
+         << " [03] Add person to list " << endl
+         << " [04] Add people to list from file " << endl
+         << " [05] Edit a person's information " << endl
+         << " [06] Display residents eligible for Social Security " << endl
+         << " [07] Display residents at risk of cardiovascular disease " << endl
+         << " [08] Display male:female ratio of county population " << endl
+         << " [09] Find parents of a resident " << endl
+         << " [10] Find children of a resident " << endl
+         << " [11] Find siblings of a resident " << endl
+         << " [12] Find uncles, aunts, nephews, nieces of a resident " << endl;
+    cout << "Enter option number: ";
+    int choice; cin >> choice;
+    cout << endl << endl;
+    return choice;
+}
+
+// Given a reference (pointer to pointer) tothe head of a list and a
+// position, deletes the node at the given position
+void deletePerson(person **head_ref, int position)
+{
+    // If linked list is empty
+    if (*head_ref == NULL)
+        return;
+    // Store head node
+    person* temp = *head_ref;
+    // If head needs to be removed
+    if (position == 0)
+    {
+        // Change head
+        *head_ref = temp->next;
+        // Free old head
+        free(temp);            
+        return;
+    }
+    // Find previous node of the node to be deleted
+    for(int i = 0; temp != NULL && i < position - 1; i++)
+        temp = temp->next;
+    // If position is more than number of nodes
+    if (temp == NULL || temp->next == NULL)
+        return;
+    // Node temp->next is the node to be deleted
+    // Store pointer to the next of node to be deleted
+    person *next = temp->next->next;
+ 
+    // Unlink the node from linked list
+    free(temp->next); // Free memory
+    // Unlink the deleted node from list
+    temp->next = next;
+}
+
+void addNewPerson(person* current, person* head) {
+    // Get information of person to add
+    cout << endl << "Enter information of new person to add to list of residents: " << endl;
+    person new_person = getNewPerson();
+    cout << endl << "Adding the following person to list of residents: " << endl;
+    cout << new_person.pName << " | " << new_person.pSSN << " | " << new_person.gender << " | " << new_person.DOB << " | " 
+        << new_person.height << " | " << new_person.weight << " | " << new_person.fSSN << " | "  << new_person.mSSN << " | " <<  endl ;
+    
+    // Find position for new person based on SSN
+    while((current != NULL) && (new_person.pSSN < current->pSSN)) {
+        current = current->next;
+    }
+    // Insert person at specific position in list
+    insertAfter(current->next, &new_person);
+    current = head;
+    cout << endl;
+}
+
+person getNewPerson() {
+    person ures; // instantiate a struct
+    string univ;
+    cin.ignore();
+    
+    // initializing the members of a struct:
+    cout << "Enter the name of new resident: ";
+        getline(cin, univ); ures.pName = univ;
+    cout << "Enter the SSN of resident: ";
+        getline(cin, univ); ures.pSSN = stol(univ);
+    cout << "Enter the gender of resident: ";
+        getline(cin, univ); ures.gender = univ[0];
+    cout << "Enter the DOB of resident (yyyy/mm/dd): ";
+        getline(cin, univ); ures.DOB = univ; // = "1961/07/24"
+    cout << "Enter the height in inches of resident: ";
+        getline(cin, univ); ures.height = stof(univ);
+    cout << "Enter the weight in pounds of resident: ";
+        getline(cin, univ); ures.weight = stof(univ);
+    cout << "Enter the father's SSN: ";
+        getline(cin, univ); ures.fSSN = stol(univ);
+    cout << "Enter the mother's SSN: ";
+        getline(cin, univ); ures.mSSN = stol(univ);
+    // end initializing
+    return ures;
+}
+/* Given a node prev_node, insert a new node after the given 
+prev_node */
+void insertAfter(person* prev_person, person* new_person) { 
+    /*1. Check if the given prev_node is NULL */
+    if (prev_person == NULL) { 
+        cout<<"The given previous node cannot be NULL"; 
+        return; 
+    }
+    
+    /* 2. Allocate new node */
+    person* new_data = new person;
+    
+    /* 3. Put in the data */
+    new_data = new_person;
+    
+    /* 4. Make next of new node as next of prev_node */
+    new_data->next = prev_person->next;
+    
+    /* 5. Move the next of prev_node as new_node */
+    prev_person->next = new_person; 
+}
+
+void editPerson(person* current) {
+    cout << "Please enter the SSN of a resident: ";
+    long uSSN; cin >> uSSN;
+    person* nPerson = new person;
+    nPerson = current;
+    while(current != NULL) {
+        if(current->pSSN == uSSN) { break; }
+        else { current = current->next; }
+    }
+    
+    string univ;
+    cin.ignore();
+    
+    // initializing the members of a struct:
+    cout << "Enter the name of resident: ";
+        getline(cin, univ); current->pName = univ;
+    cout << "Enter the height in inches of resident: ";
+        getline(cin, univ); current->height = stof(univ);
+    cout << "Enter the weight in pounds of resident: ";
+        getline(cin, univ); current->weight = stof(univ);
+}
+
+float getAge(string strDOB) {
+    // string strDOB = "YYYY/MM/DD hh:mm:ss";
+    
+    time_t tDOB;
+    int yy, month, dd, hh, mm, ss;
+    struct tm tBase;
+    const char *zStart = strDOB.c_str(); //char buffer
+    
+    //pass char buffer to sscanf function
+    sscanf(zStart, "%d/%d/%d %d:%d:%d", &yy, &month, &dd, &hh, &mm, &ss);
+    // reference the ints yy, mm, dd, hh, mm, ss to 1900/01/01 00:00:00
+    tBase.tm_year = yy - 1900;  // 1900/01/01 00:00:00
+    tBase.tm_mon = month - 1;
+    tBase.tm_mday = dd;
+    tBase.tm_hour = hh;
+    tBase.tm_min = mm;
+    tBase.tm_sec = ss;
+    // set DST to false (Daylight Saving Time)
+    tBase.tm_isdst = -1;
+    
+    tDOB = mktime(&tBase);
+    
+    //cout << tDOB << endl;
+    
+    time_t tCurrent;
+    time(&tCurrent);    // get current time; same as: timer = time(NULL);
+    // ZERO TIME IN C++ IS 1900/01/01 00:00:00
+    
+    long seconds = difftime(tCurrent, tDOB);
+    //cout << seconds << endl;
+    
+    float years = float(seconds) / (365.0 * 24.0 * 3600.0);
+    //cout << years << endl;
+    
+    return years;
+}
+
+float getBMI (float height, float weight) {
+        float BMI = (weight / 2.2) / ((height * 0.0254) * (height * 0.0254));
+        return BMI;
+}
+
+void getParents(person* current) {
+    cout << "Please enter the SSN of a resident: ";
+    long uSSN; cin >> uSSN;
+    person* nPerson = new person;
+    nPerson = current;
+    while(current != NULL) {
+        if(current->pSSN == uSSN) { break; }
+        else { current = current->next; }
+    }
+    string pName = current->pName;
+    long mSSN = current->mSSN;
+    long fSSN = current->fSSN;
+    current = nPerson;
+    string mName, fName;
+    while (current != NULL) {
+        if(mSSN == current->pSSN) { mName = current->pName; }
+        if(fSSN == current->pSSN) { fName = current->pName; }
+        current = current->next;
+    }
+    cout << pName << "'s parents are " << fName << ", " << mName << endl;
+}
+
+void getChildren(person* current) {
+    cout << "Please enter the SSN of parent: ";
+    long uSSN; cin >> uSSN;
+    person* nPerson = new person;
+    nPerson = current;
+    while (current != NULL) {
+        if (current->pSSN == uSSN) {
+            string parentName = current->pName;
+            string childNames = "";
+            if (current->gender == 'M') {
+                while (nPerson != NULL) {
+                    if ((nPerson->fSSN == current->pSSN) && (childNames == "")) { childNames = childNames + nPerson->pName; }
+                    else if ((nPerson->fSSN == current->pSSN) && (childNames != "")) { childNames = childNames + ", " + nPerson->pName; }
+                    nPerson = nPerson->next;
+                }
+                if (childNames == "") { cout << parentName << " is the father of nobody. " << endl; }
+                else { cout << parentName << " is the father of " << childNames << endl; }
+            }
+            
+            if (current->gender == 'F') {
+                while(nPerson != NULL) {
+                    if ((nPerson->mSSN == current->pSSN) && (childNames == "")) { childNames = childNames + nPerson->pName; }
+                    else if ((nPerson->mSSN == current->pSSN) && (childNames != "")) { childNames = childNames + ", " + nPerson->pName; }
+                    nPerson = nPerson->next;
+                }
+                if (childNames == "") { cout << parentName << " is the mother of nobody. " << endl; }
+                else { cout << parentName << " is the mother of " << childNames << endl; }
+            }
+        }
+        current = current->next;
+    }
+}
+
+void getSiblings(person* current){
+    string fullSibs = "";
+    int sibsFound = 0;
+    
+    cout << "Please enter the SSN of resident: ";
+    long uSSN; cin >> uSSN;
+    person* nPerson = new person;
+    nPerson = current;
+    while (current != NULL) {
+        if (current->pSSN == uSSN) { break; }
+        else { current = current->next; }
+    }
+    if(current->pSSN == uSSN) {
+        while (nPerson != NULL) {
+            if ((current->pName != nPerson->pName) && (current->fSSN == nPerson->fSSN) && (current->mSSN == nPerson->mSSN)){
+                if (sibsFound > 0) {fullSibs = fullSibs + ", " + nPerson->pName;}
+                else {fullSibs = nPerson->pName;}
+                sibsFound = 1;
+            }
+            nPerson = nPerson->next;
+        }
+    }
+    if (sibsFound > 0) { cout << current->pName << "'s siblings are " << fullSibs << endl << endl; }
+    else if (sibsFound == 0) { cout << current->pName << " does not have siblings. " << endl; }
+}
+
+void getRelatives(person* current) {
+    cout << "Please enter the SSN of resident: ";
+    long uSSN; cin >> uSSN;
+    person* nPerson = new person;
+    nPerson = current;
+    person* zPerson = new person;
+    zPerson = current;
+    while (current != NULL) {
+        if (current->pSSN == uSSN) { break; }
+        else { current = current->next; }
+    }
+    long pSSN = current->pSSN;
+    string pName = current->pName;
+    long mSSN = current->mSSN;
+    long fSSN = current->fSSN;
+    current = nPerson;
+    person* mother = new person;
+    person* father = new person;
+    
+    while (current != NULL) {
+        if(current->pSSN == mSSN) {mother = current; break; }
+        else {current = current->next; }
+    }
+    current = nPerson;
+    while (current != NULL) {
+        if(current->pSSN == fSSN) {father = current; break; }
+        else {current = current->next; }
+    }
+    current = nPerson;
+    int sibsFound = 0;
+    int sibCount = 0;
+    person* mSibs = new person;
+    while (nPerson != NULL) {
+        if ((mother->pName != nPerson->pName) && (mother->fSSN == nPerson->fSSN) && (mother->mSSN == nPerson->mSSN)){
+            mSibs = nPerson;
+            sibsFound = 1; sibCount = 1;
+            
+        }
+        nPerson = nPerson->next;
+    }
+    nPerson = current;
+    sibCount = 0;
+    person* fSibs = new person;
+    while (nPerson != NULL) {
+        if ((father->pName != nPerson->pName) && (father->fSSN == nPerson->fSSN) && (father->mSSN == nPerson->mSSN)){
+            fSibs = nPerson;
+            sibsFound = 1; sibCount = 1;
+        }
+        nPerson = nPerson->next;
+    }
+    nPerson = current;
+    
+    if (sibsFound = 0) {cout << pName << " does not have any aunts or uncles. " << endl; }
+    else { cout << pName << "'s aunts and uncles are " << mSibs->pName << ", " << fSibs->pName << endl; }
+    
+    current = nPerson;
+    string mchildNames = "";
+    while (current != NULL) {
+        if (current->pSSN == mSibs->pSSN) {
+            if (current->gender == 'M') {
+                while (nPerson != NULL) {
+                    if ((nPerson->fSSN == current->pSSN) && (mchildNames == "")) { mchildNames = mchildNames + nPerson->pName; }
+                    else if ((nPerson->fSSN == current->pSSN) && (mchildNames != "")) { mchildNames = mchildNames + ", " + nPerson->pName; }
+                    nPerson = nPerson->next;
+                }
+            }
+            if (current->gender == 'F') {
+                while(nPerson != NULL) {
+                    if ((nPerson->mSSN == current->pSSN) && (mchildNames == "")) { mchildNames = mchildNames + nPerson->pName; }
+                    else if ((nPerson->mSSN == current->pSSN) && (mchildNames != "")) { mchildNames = mchildNames + ", " + nPerson->pName; }
+                    nPerson = nPerson->next;
+                }
+            }
+        }
+        current = current->next;
+    }
+    current = zPerson;
+    nPerson = zPerson;
+    string fchildNames = "";
+    while (current != NULL) {
+        if (current->pSSN == fSibs->pSSN) {
+            if (current->gender == 'M') {
+                while (nPerson != NULL) {
+                    if ((nPerson->fSSN == current->pSSN) && (fchildNames == "")) { fchildNames = fchildNames + nPerson->pName; }
+                    else if ((nPerson->fSSN == current->pSSN) && (fchildNames != "")) { fchildNames = fchildNames + ", " + nPerson->pName; }
+                    nPerson = nPerson->next;
+                }
+            }
+            if (current->gender == 'F') {
+                while(nPerson != NULL) {
+                    if ((nPerson->mSSN == current->pSSN) && (fchildNames == "")) { fchildNames = fchildNames + nPerson->pName; }
+                    else if ((nPerson->mSSN == current->pSSN) && (fchildNames != "")) { fchildNames = fchildNames + ", " + nPerson->pName; }
+                    nPerson = nPerson->next;
+                }
+            }
+        }
+        current = current->next;
+    }
+    
+    if ((mchildNames == "") && (fchildNames == "")) { cout << pName << " does not have any nieces or nephews. " << endl; }
+    else { cout << pName << "'s nieces and nephews are " << mchildNames << ", " << fchildNames << endl; }
+}
