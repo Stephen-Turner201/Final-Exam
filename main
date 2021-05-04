@@ -33,6 +33,8 @@ void insertAfter(person*, person);
 void addNewPerson(person*, person*);
 person getNewPerson();
 void insertAfter(person*, person*);
+void sortedPerson(person*)
+void sortingNewPerson(person*);
 void editPerson(person*);
 float getAge(string);
 float getBMI(float, float);
@@ -384,6 +386,60 @@ void insertAfter(person* prev_person, person* new_person) {
     prev_person->next = new_person; 
 }
 
+//void sortingNewPerson(){
+    //current = head; person* prevPerson ;  
+    //while (current->next != NULL){
+        //prevPerson = current;
+      //  current = current->next;
+    //} 
+    //prevPerson->next = NULL; 
+    
+    //current = head;
+  //  cout << endl;
+    
+//person* temp = head ;
+    //int i = 0 ;
+     //while(temp!=NULL){
+        // i++;
+      //   temp=temp->next ;
+    //}    
+    //int n = i - 1;
+  
+    //while(n--){
+        
+    //person* prev = NULL;
+    //person* current = head;
+    
+       // while(current->next != NULL){
+            //person* index = current->next ;
+            
+            //if(current->pSSN >= index->pSSN){
+                
+                //if(prev==NULL){ // if first Node
+                    
+                    //Node* index = current->next ;
+                    //current->next = index->next ;
+                    //index->next = current ;
+                   // prev=index ;
+                 //   head = prev ;
+               // }
+                //else {
+                    //Node* index = current->next ;
+                   // prev->next = index ;
+                   // current->next = index->next ;
+                 //   index->next = current ;
+               //     prev = index ;
+             //  }
+           // }
+            //else {
+          //      prev = current ; 
+        //        current=current->next ;
+      //      }
+    //    }
+  //  }
+//	current = head;
+//	cout << endl;
+//}
 void editPerson(person* current) {
     cout << "Please enter the SSN of a resident: ";
     long uSSN; cin >> uSSN;
