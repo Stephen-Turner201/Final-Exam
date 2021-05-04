@@ -33,6 +33,7 @@ void insertAfter(person*, person);
 void addNewPerson(person*, person*);
 person getNewPerson();
 void insertAfter(person*, person*);
+void sortingPerspn(person*);
 void editPerson(person*);
 float getAge(string);
 float getBMI(float, float);
