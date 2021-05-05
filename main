@@ -34,6 +34,7 @@ void addNewPerson(person*, person*);
 person getNewPerson();
 void insertAfter(person*, person*);
 void sortingPerspn(person*);
+void addBefore(person* current, person* new_person);
 void editPerson(person*);
 float getAge(string);
 float getBMI(float, float);
@@ -318,6 +319,11 @@ void deletePerson(person **head_ref, int position)
     free(temp->next); // Free memory
     // Unlink the deleted node from list
     temp->next = next;
+}
+void addBefore(person* current, person* new_person)
+{
+    new_person->next = current->next;
+    current->next = new_person;
 }
 
 void addNewPerson(person* current, person* head) {
