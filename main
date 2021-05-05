@@ -319,7 +319,60 @@ void deletePerson(person **head_ref, int position)
     // Unlink the deleted node from list
     temp->next = next;
 }
-
+//void sortingNewPerson(){
+    //current = head; person* prevPerson ;  
+    //while (current->next != NULL){
+        //prevPerson = current;
+      //  current = current->next;
+    //} 
+    //prevPerson->next = NULL; 
+    
+    //current = head;
+  //  cout << endl;
+    
+//person* temp = head ;
+    //int i = 0 ;
+     //while(temp!=NULL){
+        // i++;
+      //   temp=temp->next ;
+    //}    
+    //int n = i - 1;
+  
+    //while(n--){
+        
+    //person* prev = NULL;
+    //person* current = head;
+    
+       // while(current->next != NULL){
+            //person* index = current->next ;
+            
+            //if(current->pSSN >= index->pSSN){
+                
+                //if(prev==NULL){ // if first Node
+                    
+                    //Node* index = current->next ;
+                    //current->next = index->next ;
+                    //index->next = current ;
+                   // prev=index ;
+                 //   head = prev ;
+               // }
+                //else {
+                    //Node* index = current->next ;
+                   // prev->next = index ;
+                   // current->next = index->next ;
+                 //   index->next = current ;
+               //     prev = index ;
+             //  }
+           // }
+            //else {
+          //      prev = current ; 
+        //        current=current->next ;
+      //      }
+    //    }
+  //  }
+//	current = head;
+//	cout << endl;
+//}
 void addNewPerson(person* current, person* head) {
     // Get information of person to add
     cout << endl << "Enter information of new person to add to list of residents: " << endl;
